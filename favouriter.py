@@ -5,13 +5,10 @@ from playwright.sync_api import Playwright, sync_playwright
 import subprocess
 import tempfile
 
-#TODO: add requirements.txt file
-
 load_dotenv()	#looks for .env file & loads content as environment variables, when found. By default looks in the current directory. Else looks in parent directory
 
 username=os.getenv('USERNAME')
 password=os.getenv('PASSWORD')
-
 
 
 def run(playwright: Playwright) -> None:
