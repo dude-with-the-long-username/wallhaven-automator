@@ -3,12 +3,14 @@
 Automate repetitive wallpaper actions on [wallhaven.cc](www.wallhaven.cc)
 
 
-# Setup
+## Setup
 
-- `pip install requirements.txt`
+- `pip install -r requirements.txt`
 - Create a file named `.env` in the project root folder
-    - Add 
+    - Add the following to the `.env` file
         ```
             USERNAME='your-username'
             PASSWORD='your-password'
         ```
+## Run
+- `pytest favouriter.py`
