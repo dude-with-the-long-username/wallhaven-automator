@@ -26,8 +26,13 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
         ```
 ### Run
 - `pytest favouriter.py`
+  - To run with GUI (browser window):
+    - set value of `headless` variable to `False` in program
 
 ## 🏗 In the works
 
 - Download all your favourited wallpapers
 - Favorite current desktop wallpaper into specific collections on wallhaven
+- Notification on sucess/failure
+- Cookie storage & usage for more performance
+- Package as an executable & AUR package
