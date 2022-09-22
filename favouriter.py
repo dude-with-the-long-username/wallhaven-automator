@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os
 import re
 from dotenv import load_dotenv
@@ -7,12 +9,27 @@ import tempfile
 
 load_dotenv()	#looks for .env file & loads content as environment variables, when found. By default looks in the current directory. Else looks in parent directory
 
-username=os.getenv('USERNAME')
-password=os.getenv('PASSWORD')
+# username=os.getenv('USERNAME')
+# password=os.getenv('PASSWORD')
+
+password_file_path = '/home/fiona/Projects/wallhaven-automator/.env'
+
+with open(password_file_path, mode="r") as file:
+    variables_list : list[str] = file.readlines()
+
+def remove_quote_and_new_line(a_string:str) -> str:
+    return a_string.replace("'",'').replace("\n",'')
+
+for variable in variables_list:
+    if re.match(r"^USERNAME", variable):
+        username = re.search(r"(^USERNAME=)(.*)",remove_quote_and_new_line(variable)).group(2)
+
+    if re.match(r"^PASSWORD", variable):
+        password = re.search(r"(^PASSWORD=)(.*)",remove_quote_and_new_line(variable)).group(2)
 
 
 def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
 
     # Open new page
