@@ -29,7 +29,7 @@ for variable in variables_list:
 
 
 def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
 
     # Open new page
@@ -70,8 +70,10 @@ def run(playwright: Playwright) -> None:
 
     if fav_button_text == ' Add to Favorites':
         page.locator('id=fav-button').click()
+        subprocess.run(['notify-send', 'Favorited :D'])
     elif fav_button_text == ' In Favorites':
-        ...
+        # ...
+        subprocess.run(['notify-send', 'Already Favorited'])
 
     # ---------------------
     context.close()
