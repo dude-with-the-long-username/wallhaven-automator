@@ -31,6 +31,14 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
   - To run with GUI (browser window):
     - set value of `headless` variable to `False` in program
 
+### Make Program executable from anywhere
+
+- Add `#!/usr/bin/python` to the top of the file
+- Make script executable
+	- `chmod +x favouriter.py`
+- Create a symbolic link to your script-name.py from `/usr/local/bin` 
+	- `ln -s <full-path-to-favouriter.py> /usr/local/bin/wallauto`  (can replace `wallauto` with any command name you want)
+- Call `wallauto` from terminal.
 ## 🏗 In the works
 
 - Download all your favourited wallpapers
