@@ -17,15 +17,15 @@ password_file_path = '/home/fiona/Projects/wallhaven-automator/.env'
 with open(password_file_path, mode="r") as file:
     variables_list : list[str] = file.readlines()
 
-def remove_quote_and_new_line(a_string:str) -> str:
+def remove_quotes_new_line(a_string:str) -> str:
     return a_string.replace("'",'').replace("\n",'')
 
 for variable in variables_list:
     if re.match(r"^USERNAME", variable):
-        username = re.search(r"(^USERNAME=)(.*)",remove_quote_and_new_line(variable)).group(2)
+        username = re.search(r"(^USERNAME=)(.*)",remove_quotes_new_line(variable)).group(2).strip()
 
     if re.match(r"^PASSWORD", variable):
-        password = re.search(r"(^PASSWORD=)(.*)",remove_quote_and_new_line(variable)).group(2)
+        password = re.search(r"(^PASSWORD=)(.*)",remove_quotes_new_line(variable)).group(2).strip()
 
 
 def run(playwright: Playwright) -> None:
