@@ -102,4 +102,7 @@ def main() -> None:
         run(playwright)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        subprocess.run(['notify-send', 'Failed Favoriting', 'Error Occured!', '--app-name=WallAuto'])
