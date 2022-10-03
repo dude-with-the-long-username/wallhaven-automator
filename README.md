@@ -6,6 +6,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 - Automatically favourite your current desktop wallpaper (fetched from wallhaven site through [variety](https://github.com/varietywalls/variety))
 - Notification on sucess
+  - Thumbnail of favorited pic shown in the notification
 
 ## 🔰 Setup
 ### Pre-requisites
