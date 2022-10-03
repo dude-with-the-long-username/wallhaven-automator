@@ -28,7 +28,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
             USERNAME='your-username'
             PASSWORD='your-password'
         ```
-- Add full path of `.env` file to the variable `password_file_path` in the program.
+- Add full path of project directory to the variable `project_directory_path` in the program.
 ### Run
 - `pytest favouriter.py`
   - To run with GUI (browser window):

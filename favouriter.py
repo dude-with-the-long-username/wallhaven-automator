@@ -14,7 +14,7 @@ load_dotenv()	#looks for .env file & loads content as environment variables, whe
 # password=os.getenv('PASSWORD')
 
 project_directory_path = '/home/fiona/Projects/wallhaven-automator/'
-password_file_path = '/home/fiona/Projects/wallhaven-automator/.env'
+password_file_path = f'{project_directory_path}.env'
 
 with open(password_file_path, mode="r") as file:
     variables_list : list[str] = file.readlines()
