@@ -7,6 +7,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 - Automatically favourite your current desktop wallpaper (fetched from wallhaven site through [variety](https://github.com/varietywalls/variety))
 - Notification on sucess
   - Thumbnail of favorited pic shown in the notification
+- Cookie storage & usage for more performance (skips trying to login if cookie already exists)
 
 ## 🔰 Setup
 ### Pre-requisites
@@ -49,7 +50,6 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 - Download all your favourited wallpapers
 - Favorite current desktop wallpaper into specific collections on wallhaven
-- Cookie storage & usage for more performance
 - Package as an executable & AUR package
 - save wallpaper for future favoriting if Internet connection is currently unavailable
 - notification on failure

@@ -1,6 +1,7 @@
 # Added by me:
 temp_for_testing*.py
 .env
+state.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
