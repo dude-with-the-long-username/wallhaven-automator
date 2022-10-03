@@ -76,8 +76,6 @@ def run(playwright: Playwright) -> None:
     page.goto(f"https://wallhaven.cc/w/{wallpaper_id}")      # wallpaper url that we want to favourite
     fav_button_text : str = page.locator('id=fav-button').inner_text()
 
-    notification_pic_flag = f"-i {wallpaper_path}"
-
     if fav_button_text == ' Add to Favorites':
         page.locator('id=fav-button').click()
         subprocess.run(['notify-send', 'Favorited :D', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
@@ -89,6 +87,9 @@ def run(playwright: Playwright) -> None:
     context.close()
     browser.close()
 
+def main() -> None:
+    with sync_playwright() as playwright:
+        run(playwright)
 
-with sync_playwright() as playwright:
-    run(playwright)
+if __name__ == "__main__":
+    main()
