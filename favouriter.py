@@ -29,15 +29,16 @@ for variable in variables_list:
 
 
 def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
-
+    
     cmd = ['variety', '--get']  #command to run in terminal - prints path of the current wallpaper set by variety
     with tempfile.TemporaryFile() as tempf:
         proc = subprocess.Popen(cmd, stdout=tempf)
         proc.wait()
         tempf.seek(0)   # go to start of file
         command_output : list = tempf.readlines()  # outputs a list
+    
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
     
     # Example of command_output= b'/home/fiona/.config/variety/Downloaded/wallhaven_wallhaven_cc_search_q_like_3Ag7l5x3_categories_111_purity_100_sorting_relevance_order_desc/wallhaven-y8w9ex.jpg\n'
     wallpaper_id : str = re.search(r"(.*wallhaven-)(.*?)\..*", str(command_output[0])).group(2)
