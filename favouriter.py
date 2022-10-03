@@ -71,10 +71,10 @@ def run(playwright: Playwright) -> None:
 
     if fav_button_text == ' Add to Favorites':
         page.locator('id=fav-button').click()
-        subprocess.run(['notify-send', 'Favorited :D'])
+        subprocess.run(['notify-send', 'Favorited :D', '--app-name=WallAuto'])
     elif fav_button_text == ' In Favorites':
         # ...
-        subprocess.run(['notify-send', 'Already Favorited'])
+        subprocess.run(['notify-send', 'Already Favorited', '--app-name=WallAuto'])
 
     # ---------------------
     context.close()
