@@ -30,7 +30,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
         ```
 - Add full path of project directory to the variable `project_directory_path` in the file `favouriter.py`(replace the value that already exists).
 ### Run
-- `pytest favouriter.py`
+- `pytest favouriter.py` or `python favouriter.py`
   - To run with GUI (browser window):
     - set value of `headless` variable to `False` in program
 
