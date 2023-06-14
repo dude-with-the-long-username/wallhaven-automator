@@ -21,7 +21,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 - Install project dependencies
   - `pip install -r requirements.txt`
 - Install browsers required by playwright
-  - `playwright install` 
+  - `playwright install` or `python -m playwright install`
 - Create a file named `.env` in the root of your project folder
     - Add the following to the `.env` file (replace values with your password & username)
         ```
