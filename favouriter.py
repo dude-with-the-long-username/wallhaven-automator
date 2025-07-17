@@ -1,3 +1,6 @@
+#!/home/fiona/projects/wallhaven-automator/venv/bin/python3
+
+
 #!/usr/bin/python
 
 import os
@@ -13,7 +16,7 @@ load_dotenv()	#looks for .env file & loads content as environment variables, whe
 # username=os.getenv('USERNAME')
 # password=os.getenv('PASSWORD')
 
-project_directory_path = '/home/fiona/Projects/wallhaven-automator/'
+project_directory_path = '/home/fiona/projects/wallhaven-automator/'
 password_file_path = f'{project_directory_path}.env'
 
 with open(password_file_path, mode="r") as file:

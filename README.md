@@ -18,6 +18,9 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 ### Steps
 
+- set up a virtual environment (optional but recommended)
+  - `python3 -m venv venv`
+  - Activate it with `source venv/bin/activate`
 - Install project dependencies
   - `pip install -r requirements.txt`
 - Install browsers required by playwright
@@ -36,7 +39,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 ### Make Program executable from anywhere
 
-- Add `#!/usr/bin/python` to the top of the file
+- Add the shebang line that points to your Python interpreter inside your virtual enviornment, e.g. `#!/home/fiona/projects/wallhaven-automator/venv/bin/python3`   (alternative to adding `#!/usr/bin/python` to the top of the file)
 - Make script executable
 	- `chmod +x favouriter.py`
 - Create a symbolic link to your script-name.py from `/usr/local/bin` 
