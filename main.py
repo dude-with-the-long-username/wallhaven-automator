@@ -52,6 +52,7 @@ def run(playwright: Playwright) -> None:
         print(f'[LOG] Wallpaper {wallpaper_id} not in DB. Adding...')
         db.add_wallpaper(wallpaper_id, wallpaper_url, wallpaper_path)
         favourited = 0
+        notifier.notify('Added to DB', icon=wallpaper_path)
     else:
         favourited = row[3]
         print(f'[LOG] Wallpaper {wallpaper_id} found in DB. Favourited={bool(favourited)}')
