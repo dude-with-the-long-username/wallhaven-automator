@@ -96,7 +96,7 @@ def run(playwright: Playwright) -> None:
         proc.wait()
         tempf.seek(0)   # go to start of file
         command_output : list = tempf.readlines()  # outputs a list with 1 element
-    
+
     # Example of command_output= b'/home/fiona/.config/variety/Downloaded/wallhaven_wallhaven_cc_search_q_like_3Ag7l5x3_categories_111_purity_100_sorting_relevance_order_desc/wallhaven-y8w9ex.jpg\n'
     wallpaper_id : str = re.search(r"(.*wallhaven-)(.*?)\..*", str(command_output[0])).group(2)
     wallpaper_path : str = clean_variety_output_path(str(command_output[0]))
@@ -118,17 +118,9 @@ def run(playwright: Playwright) -> None:
         subprocess.run(['notify-send', 'Already Favorited (DB)', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
         return
 
-    # Get all unfavorited wallpapers
-    unfavs = get_unfavourited_wallpapers()
-    print(f'[LOG] {len(unfavs)} unfavorited wallpapers in DB.')
-    if not unfavs:
-        print('[LOG] No wallpapers to favorite.')
-        subprocess.run(['notify-send', 'No wallpapers to favorite', '--app-name=WallAuto'])
-        return
-
     print('[LOG] Launching browser...')
     browser = playwright.chromium.launch(headless=True)
-    
+
     if Path(f"{project_directory_path}/state.json").exists():   #checking if file exists
         # Create a new context with the saved storage state.
         print('[LOG] Using existing browser state.')
@@ -150,21 +142,20 @@ def run(playwright: Playwright) -> None:
     print('[LOG] Saving browser state...')
     context.storage_state(path=f"{project_directory_path}/state.json")
 
-    # Favorite all unfavorited wallpapers
-    for wid, wurl, wpath in unfavs:
-        print(f'[LOG] Visiting {wurl} ...')
-        page.goto(wurl)
-        fav_button_text : str = page.locator('id=fav-button').inner_text()
-        print(f'[LOG] fav-button text: "{fav_button_text}"')
-        if fav_button_text == ' Add to Favorites':
-            print(f'[LOG] Favoriting wallpaper {wid}...')
-            page.locator('id=fav-button').click()
-            set_favourited(wid)
-            subprocess.run(['notify-send', f'Favorited: {wid}', '--app-name=WallAuto', '-i', f'{wpath}'])
-        elif fav_button_text == ' In Favorites':
-            print(f'[LOG] Wallpaper {wid} already in favorites on wallhaven. Marking as favorited in DB.')
-            set_favourited(wid)
-            subprocess.run(['notify-send', f'Already Favorited: {wid}', '--app-name=WallAuto', '-i', f'{wpath}'])
+    # Only favorite the current wallpaper
+    print(f'[LOG] Visiting {wallpaper_url} ...')
+    page.goto(wallpaper_url)
+    fav_button_text : str = page.locator('id=fav-button').inner_text()
+    print(f'[LOG] fav-button text: "{fav_button_text}"')
+    if fav_button_text == ' Add to Favorites':
+        print(f'[LOG] Favoriting wallpaper {wallpaper_id}...')
+        page.locator('id=fav-button').click()
+        set_favourited(wallpaper_id)
+        subprocess.run(['notify-send', f'Favorited: {wallpaper_id}', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
+    elif fav_button_text == ' In Favorites':
+        print(f'[LOG] Wallpaper {wallpaper_id} already in favorites on wallhaven. Marking as favorited in DB.')
+        set_favourited(wallpaper_id)
+        subprocess.run(['notify-send', f'Already Favorited: {wallpaper_id}', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
 
     print('[LOG] Closing browser...')
     context.close()
