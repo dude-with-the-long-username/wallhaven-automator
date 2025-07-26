@@ -5,8 +5,8 @@ def favourite_wallpaper(playwright, wallpaper_id, wallpaper_url, wallpaper_path,
     Automates the process of favoriting a wallpaper on wallhaven.cc using Playwright.
     Handles login, persistent state, and notification.
     """
-    print('[LOG] Launching browser...')
-    browser = playwright.chromium.launch(headless=True)
+    print('[LOG] Launching browser (firefox)...')
+    browser = playwright.firefox.launch(headless=True)
 
     if Path(state_path).exists():
         print('[LOG] Using existing browser state.')
