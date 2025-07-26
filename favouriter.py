@@ -13,6 +13,8 @@ import notifier
 import tempfile
 from pathlib import Path
 import argparse
+import time
+
 
 load_dotenv()	#looks for .env file & loads content as environment variables, when found. By default looks in the current directory. Else looks in parent directory
 
@@ -78,16 +80,54 @@ def run(playwright: Playwright) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Wallhaven Automator CLI")
     parser.add_argument('--show-db', action='store_true', help='Show all wallpapers in the database')
+    parser.add_argument('--show-unfavourited', action='store_true', help='Show IDs of all unfavourited wallpapers in the database')
+    parser.add_argument('--favourite', action='store_true', help='Favorite the current wallpaper (default action)')
+    parser.add_argument('--favourite-all', action='store_true', help='Favorite all unfavourited wallpapers in the database (5s delay between each)')
+    parser.add_argument('--remove-unfavourited', action='store_true', help='Remove all unfavourited wallpapers from the database')
     args = parser.parse_args()
+
+    # If --favourite is passed or no argument is given, run the main workflow
+    if args.favourite or not any(vars(args).values()):
+        db.init_db()
+        with sync_playwright() as playwright:
+            run(playwright)
 
     if args.show_db:
         db.show_db()
         return
-    # Default: run the main workflow
-    db.init_db()
-    with sync_playwright() as playwright:
-        run(playwright)
-
+    if args.show_unfavourited:
+        db.show_unfavourited_ids()
+        return
+    # If --favourite-all is passed, favorite all unfavourited wallpapers with delay
+    if args.favourite_all:
+        db.init_db()
+        unfavs = db.get_unfavourited_wallpapers()
+        if not unfavs:
+            print("No unfavourited wallpapers to process.")
+            return
+        for wid, wurl, wpath in unfavs:
+            print(f"[CLI] Processing wallpaper {wid}...")
+            with sync_playwright() as playwright:
+                import wallhaven
+                wallhaven.favourite_wallpaper(
+                    playwright=playwright,
+                    wallpaper_id=wid,
+                    wallpaper_url=wurl,
+                    wallpaper_path=wpath,
+                    username=username,
+                    password=password,
+                    state_path=f"{project_directory_path}/state.json",
+                    notifier=notifier,
+                    db=db
+                )
+            print("[CLI] Waiting 5 seconds before next wallpaper...")
+            time.sleep(5)
+        return
+    
+    if args.remove_unfavourited:
+        db.remove_unfavourited()
+        return
+    
 if __name__ == "__main__":
     import traceback
     try:

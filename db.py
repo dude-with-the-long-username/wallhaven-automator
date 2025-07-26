@@ -50,10 +50,34 @@ def set_favourited(wallpaper_id):
     conn.commit()
     conn.close()
 
+def show_unfavourited_ids():
+    """Print IDs of all wallpapers with favourited=0."""
+    conn = sqlite3.connect(str(Path(__file__).parent / 'wallpapers.db'))
+    c = conn.cursor()
+    c.execute('SELECT id, url, path, favourited FROM wallpapers WHERE favourited=0')
+    rows = c.fetchall()
+    conn.close()
+    if not rows:
+        print("No unfavourited wallpapers in database.")
+        return
+    print("Unfavourited wallpapers:")
+    for row in rows:
+        print(f"ID: {row[0]}, URL: {row[1]}, Path: {row[2]}, Favourited: {row[3]}")
+
 def get_unfavourited_wallpapers():
+    """Return a list of (id, url, path) for all wallpapers with favourited=0."""
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('SELECT id, url, path FROM wallpapers WHERE favourited=0')
     rows = c.fetchall()
     conn.close()
     return rows
+
+def remove_unfavourited():
+    """Remove all entries from the database with favourited=0."""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('DELETE FROM wallpapers WHERE favourited=0')
+    conn.commit()
+    conn.close()
+    print("Removed all unfavourited wallpapers from the database.")
