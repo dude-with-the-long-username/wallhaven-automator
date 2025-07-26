@@ -15,6 +15,19 @@ def init_db():
     conn.commit()
     conn.close()
 
+def show_db():
+    print("\nWallpapers in DB:")
+    conn = sqlite3.connect(str(Path(__file__).parent / 'wallpapers.db'))
+    c = conn.cursor()
+    c.execute('SELECT id, url, path, favourited FROM wallpapers')
+    all_rows = c.fetchall()
+    conn.close()
+    if not all_rows:
+        print("No wallpapers in database.")
+        return
+    for row in all_rows:
+        print(f"ID: {row[0]}, Favourited: {bool(row[3])}, URL: {row[1]}, Path: {row[2]}")
+
 def get_wallpaper(wallpaper_id):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()

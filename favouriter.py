@@ -12,6 +12,7 @@ from playwright.sync_api import Playwright, sync_playwright
 import notifier
 import tempfile
 from pathlib import Path
+import argparse
 
 load_dotenv()	#looks for .env file & loads content as environment variables, when found. By default looks in the current directory. Else looks in parent directory
 
@@ -72,7 +73,17 @@ def run(playwright: Playwright) -> None:
         db=db
     )
 
-def main() -> None:
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Wallhaven Automator CLI")
+    parser.add_argument('--show-db', action='store_true', help='Show all wallpapers in the database')
+    args = parser.parse_args()
+
+    if args.show_db:
+        db.show_db()
+        return
+    # Default: run the main workflow
     db.init_db()
     with sync_playwright() as playwright:
         run(playwright)
