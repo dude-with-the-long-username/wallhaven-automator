@@ -31,11 +31,11 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
             USERNAME='your-username'
             PASSWORD='your-password'
         ```
-- Add full path of project directory to the variable `project_directory_path` in the file `favouriter.py`(replace the value that already exists).
+- Add full path of project directory to the variable `project_directory_path` in the file `main.py`(replace the value that already exists).
 
 ### Run & CLI Usage
 
-- `python favouriter.py [OPTIONS]`
+ `python main.py [OPTIONS]`
 
 #### CLI Options:
 
@@ -52,9 +52,9 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 - Add the shebang line that points to your Python interpreter inside your virtual enviornment, e.g. `#!/home/fiona/projects/wallhaven-automator/venv/bin/python3`   (alternative to adding `#!/usr/bin/python` to the top of the file)
 - Make script executable
-  - `chmod +x favouriter.py`
+  - `chmod +x main.py`
 - Create a symbolic link to your script-name.py from `/usr/local/bin` 
-  - `ln -s <full-path-to-favouriter.py> /usr/local/bin/wallauto`  (can replace `wallauto` with any command name you want)
+  - `ln -s <full-path-to-main.py> /usr/local/bin/wallauto`  (can replace `wallauto` with any command name you want)
 - Call `wallauto` from terminal.
 
 ## Tips:
