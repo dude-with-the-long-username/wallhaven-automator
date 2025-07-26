@@ -3,8 +3,10 @@
 
 #!/usr/bin/python
 
+
 import os
 import re
+import sqlite3
 from dotenv import load_dotenv
 from playwright.sync_api import Playwright, sync_playwright
 import subprocess
@@ -16,8 +18,55 @@ load_dotenv()	#looks for .env file & loads content as environment variables, whe
 # username=os.getenv('USERNAME')
 # password=os.getenv('PASSWORD')
 
+
 project_directory_path = '/home/fiona/projects/wallhaven-automator/'
 password_file_path = f'{project_directory_path}.env'
+db_path = f'{project_directory_path}wallpapers.db'
+
+# --- DB SETUP ---
+def init_db():
+    print('[LOG] Initializing database...')
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS wallpapers (
+        id TEXT PRIMARY KEY,
+        url TEXT,
+        path TEXT,
+        favourited INTEGER DEFAULT 0
+    )''')
+    conn.commit()
+    conn.close()
+    print('[LOG] Database ready.')
+
+def get_wallpaper(wallpaper_id):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute('SELECT id, url, path, favourited FROM wallpapers WHERE id=?', (wallpaper_id,))
+    row = c.fetchone()
+    conn.close()
+    return row
+
+def add_wallpaper(wallpaper_id, url, path):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute('INSERT OR IGNORE INTO wallpapers (id, url, path) VALUES (?, ?, ?)', (wallpaper_id, url, path))
+    conn.commit()
+    conn.close()
+
+def set_favourited(wallpaper_id):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute('UPDATE wallpapers SET favourited=1 WHERE id=?', (wallpaper_id,))
+    conn.commit()
+    conn.close()
+
+def get_unfavourited_wallpapers():
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute('SELECT id, url, path FROM wallpapers WHERE favourited=0')
+    rows = c.fetchall()
+    conn.close()
+    return rows
 
 with open(password_file_path, mode="r") as file:
     variables_list : list[str] = file.readlines()
@@ -38,8 +87,10 @@ for variable in variables_list:
 
 
 def run(playwright: Playwright) -> None:
-    
-    cmd = ['variety', '--get']  #command to run in terminal - prints path of the current wallpaper set by variety
+
+    # Get current wallpaper info from Variety
+    print('[LOG] Fetching current wallpaper from Variety...')
+    cmd = ['variety', '--get']
     with tempfile.TemporaryFile() as tempf:
         proc = subprocess.Popen(cmd, stdout=tempf)
         proc.wait()
@@ -49,63 +100,91 @@ def run(playwright: Playwright) -> None:
     # Example of command_output= b'/home/fiona/.config/variety/Downloaded/wallhaven_wallhaven_cc_search_q_like_3Ag7l5x3_categories_111_purity_100_sorting_relevance_order_desc/wallhaven-y8w9ex.jpg\n'
     wallpaper_id : str = re.search(r"(.*wallhaven-)(.*?)\..*", str(command_output[0])).group(2)
     wallpaper_path : str = clean_variety_output_path(str(command_output[0]))
-    
-    browser = playwright.chromium.launch(headless=False)
+    wallpaper_url = f"https://wallhaven.cc/w/{wallpaper_id}"
+    print(f'[LOG] Current wallpaper: id={wallpaper_id}, path={wallpaper_path}')
+
+    # DB: ensure wallpaper is tracked
+    row = get_wallpaper(wallpaper_id)
+    if not row:
+        print(f'[LOG] Wallpaper {wallpaper_id} not in DB. Adding...')
+        add_wallpaper(wallpaper_id, wallpaper_url, wallpaper_path)
+        favourited = 0
+    else:
+        favourited = row[3]
+        print(f'[LOG] Wallpaper {wallpaper_id} found in DB. Favourited={bool(favourited)}')
+
+    if favourited:
+        print(f'[LOG] Wallpaper {wallpaper_id} already favourited. Skipping browser.')
+        subprocess.run(['notify-send', 'Already Favorited (DB)', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
+        return
+
+    # Get all unfavorited wallpapers
+    unfavs = get_unfavourited_wallpapers()
+    print(f'[LOG] {len(unfavs)} unfavorited wallpapers in DB.')
+    if not unfavs:
+        print('[LOG] No wallpapers to favorite.')
+        subprocess.run(['notify-send', 'No wallpapers to favorite', '--app-name=WallAuto'])
+        return
+
+    print('[LOG] Launching browser...')
+    browser = playwright.chromium.launch(headless=True)
     
     if Path(f"{project_directory_path}/state.json").exists():   #checking if file exists
         # Create a new context with the saved storage state.
+        print('[LOG] Using existing browser state.')
         context = browser.new_context(storage_state=f"{project_directory_path}/state.json")
         page = context.new_page()
-
     else:
+        print('[LOG] Logging in to wallhaven.cc...')
         context = browser.new_context()
-        # Open new page
         page = context.new_page()
-
-        # Go to https://wallhaven.cc/
         page.goto("https://wallhaven.cc/login")
-
-        # Click [placeholder="Username or Email"]
         page.locator("[placeholder=\"Username or Email\"]").click()
-
-        # Fill [placeholder="Username or Email"]
         page.locator("[placeholder=\"Username or Email\"]").fill(f"{username}")
-
-        # Click [placeholder="Password"]
         page.locator("[placeholder=\"Password\"]").click()
-
-        # Fill [placeholder="Password"]
         page.locator("[placeholder=\"Password\"]").fill(f"{password}")
-
-        # Click button:has-text("Login")
         page.locator("button:has-text(\"Login\")").click()
         page.wait_for_url(f"https://wallhaven.cc/user/{username}")
 
+    # Save storage state
+    print('[LOG] Saving browser state...')
+    context.storage_state(path=f"{project_directory_path}/state.json")
 
-    # Save storage state into the file.
-    storage = context.storage_state(path=f"{project_directory_path}/state.json") # save login state to file
+    # Favorite all unfavorited wallpapers
+    for wid, wurl, wpath in unfavs:
+        print(f'[LOG] Visiting {wurl} ...')
+        page.goto(wurl)
+        fav_button_text : str = page.locator('id=fav-button').inner_text()
+        print(f'[LOG] fav-button text: "{fav_button_text}"')
+        if fav_button_text == ' Add to Favorites':
+            print(f'[LOG] Favoriting wallpaper {wid}...')
+            page.locator('id=fav-button').click()
+            set_favourited(wid)
+            subprocess.run(['notify-send', f'Favorited: {wid}', '--app-name=WallAuto', '-i', f'{wpath}'])
+        elif fav_button_text == ' In Favorites':
+            print(f'[LOG] Wallpaper {wid} already in favorites on wallhaven. Marking as favorited in DB.')
+            set_favourited(wid)
+            subprocess.run(['notify-send', f'Already Favorited: {wid}', '--app-name=WallAuto', '-i', f'{wpath}'])
 
-    # Go to https://wallhaven.cc/w/k7j1qd
-    page.goto(f"https://wallhaven.cc/w/{wallpaper_id}")      # wallpaper url that we want to favourite
-    fav_button_text : str = page.locator('id=fav-button').inner_text()
-
-    if fav_button_text == ' Add to Favorites':
-        page.locator('id=fav-button').click()
-        subprocess.run(['notify-send', 'Favorited :D', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
-    elif fav_button_text == ' In Favorites':
-        # ...
-        subprocess.run(['notify-send', 'Already Favorited', '--app-name=WallAuto', '-i', f'{wallpaper_path}'])
-
-    # ---------------------
+    print('[LOG] Closing browser...')
     context.close()
     browser.close()
 
 def main() -> None:
+    init_db()
     with sync_playwright() as playwright:
         run(playwright)
 
 if __name__ == "__main__":
+    import traceback
     try:
         main()
-    except:
-        subprocess.run(['notify-send', 'Failed Favoriting', 'Error Occured!', '--app-name=WallAuto'])
+    except Exception as e:
+        error_msg = f"{type(e).__name__}: {e}\n" + traceback.format_exc()
+        print(error_msg)
+        subprocess.run([
+            'notify-send',
+            'Failed Favoriting',
+            f'Error Occurred! Check log.',
+            '--app-name=WallAuto'
+        ])

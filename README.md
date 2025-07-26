@@ -50,6 +50,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 - If using KDE Desktop, set custom keyboard shortcut in settings to launch wallauto easily.
   - eg: `alt+f` as trigger and action as `variety -f && wallauto`
+    - or use command `variety -f & wallauto & wait` to run both commands in parallel
 ## 🏗 In the works
 
 - Download all your favourited wallpapers
