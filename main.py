@@ -38,8 +38,8 @@ for variable in variables_list:
         password = variable.split("=",1)[1].strip().replace("'","")
 
 
-def run(playwright: Playwright) -> None:
-
+def run(playwright: Playwright, manual=False) -> None:
+    print(f"[DEBUG] run() received manual={manual}")
 
     # Get current wallpaper info from Variety using variety.py
     print('[LOG] Fetching current wallpaper from Variety...')
@@ -57,7 +57,7 @@ def run(playwright: Playwright) -> None:
         favourited = row[3]
         print(f'[LOG] Wallpaper {wallpaper_id} found in DB. Favourited={bool(favourited)}')
 
-    if favourited:
+    if favourited and manual==False:
         print(f'[LOG] Wallpaper {wallpaper_id} already favourited. Skipping browser.')
         notifier.notify('Already Favorited (DB)', icon=wallpaper_path)
         return
@@ -73,7 +73,8 @@ def run(playwright: Playwright) -> None:
         password=password,
         state_path=f"{project_directory_path}/state.json",
         notifier=notifier,
-        db=db
+        db=db,
+        manual=manual
     )
 
 
@@ -85,13 +86,17 @@ def main():
     parser.add_argument('--favourite', action='store_true', help='Favorite the current wallpaper (default action)')
     parser.add_argument('--favourite-all', action='store_true', help='Favorite all unfavourited wallpapers in the database (5s delay between each)')
     parser.add_argument('--remove-unfavourited', action='store_true', help='Remove all unfavourited wallpapers from the database')
+    parser.add_argument('--manual', action='store_true', help='Open browser in manual (non-headless) mode and wait for user action before closing')
     args = parser.parse_args()
 
-    # If --favourite is passed or no argument is given, run the main workflow
-    if args.favourite or not any(vars(args).values()):
+    print(f"[DEBUG] args.manual: {args.manual}")
+
+    # If --favourite is passed, or no action flags (except --manual) are given, run the main workflow
+    action_flags = [args.favourite, args.favourite_all, args.show_db, args.show_unfavourited, args.remove_unfavourited]
+    if args.favourite or not any(action_flags):
         db.init_db()
         with sync_playwright() as playwright:
-            run(playwright)
+            run(playwright, manual=args.manual)
 
     if args.show_db:
         db.show_db()
@@ -119,7 +124,8 @@ def main():
                     password=password,
                     state_path=f"{project_directory_path}/state.json",
                     notifier=notifier,
-                    db=db
+                    db=db,
+                    manual=args.manual
                 )
             print("[CLI] Waiting 5 seconds before next wallpaper...")
             time.sleep(5)

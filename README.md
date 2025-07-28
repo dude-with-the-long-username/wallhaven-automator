@@ -44,6 +44,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 - `--show-unfavourited` : Show id, url, path, and favourited for all wallpapers with favourited=0
 - `--favourite-all` : Favorite all unfavourited wallpapers in the database (5s delay between each)
 - `--remove-unfavourited` : Remove all unfavourited wallpapers from the database
+- `--manual` : Run in manual mode, where the browser will remain open for inspection until there is a user input in the terminal.
 
   - To run with GUI (browser window):
     - set value of `headless` variable to `False` in program
@@ -69,3 +70,4 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 - Favorite current desktop wallpaper into specific collections on wallhaven
 - Package as an executable & AUR package
 - save wallpaper for future favoriting if Internet connection is currently unavailable
+- When using `--manual`, exit the script when the browser is closed by the user

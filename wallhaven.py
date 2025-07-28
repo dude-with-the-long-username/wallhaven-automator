@@ -1,12 +1,17 @@
 from pathlib import Path
+import sys
+import time
 
-def favourite_wallpaper(playwright, wallpaper_id, wallpaper_url, wallpaper_path, username, password, state_path, notifier, db):
+def favourite_wallpaper(playwright, wallpaper_id, wallpaper_url, wallpaper_path, username, password, state_path, notifier, db, manual=False):
     """
     Automates the process of favoriting a wallpaper on wallhaven.cc using Playwright.
     Handles login, persistent state, and notification.
+    If manual is True, launches browser in non-headless mode and waits for user input before closing.
     """
-    print('[LOG] Launching browser (firefox)...')
-    browser = playwright.firefox.launch(headless=True)
+
+    print(f"[DEBUG] favourite_wallpaper() received manual={manual}")
+    print(f'[LOG] Launching browser (firefox)... (manual={manual})')
+    browser = playwright.firefox.launch(headless=not manual)
 
     if Path(state_path).exists():
         print('[LOG] Using existing browser state.')
@@ -41,6 +46,10 @@ def favourite_wallpaper(playwright, wallpaper_id, wallpaper_url, wallpaper_path,
         db.set_favourited(wallpaper_id)
         notifier.notify(f'Already Favorited: {wallpaper_id}', icon=wallpaper_path)
 
+    if manual:
+        print('[LOG] Manual mode enabled. The browser will remain open for inspection.')
+        input('Press Enter in the terminal to close the browser and finish...')
+        print('[LOG] Closing browser after manual inspection.')
     print('[LOG] Closing browser...')
     context.close()
     browser.close()
