@@ -16,6 +16,7 @@ def get_current_wallpaper():
         proc.wait()
         tempf.seek(0)
         command_output = tempf.readlines()
+        print(f"[LOG] variety --get output: {command_output}")
     if not command_output:
         raise RuntimeError('No output from variety --get')
     wallpaper_id = re.search(r"(.*wallhaven-)(.*?)\..*", str(command_output[0])).group(2)
