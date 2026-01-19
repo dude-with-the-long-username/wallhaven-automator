@@ -18,6 +18,15 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 ### Steps
 
+#### new method:
+- Clone the repository
+  - `git clone....`
+  - `cd wallhaven-automator`
+  - `uv sync`
+  - `uv run playwright install`
+  - 
+
+#### old methods:
 - set up a virtual environment (optional but recommended)
   - `python3 -m venv venv`
   - Activate it with `source venv/bin/activate`
@@ -25,6 +34,8 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
   - `pip install -r requirements.txt`
 - Install browsers required by playwright
   - `playwright install` or `python -m playwright install`
+
+#### common to both methods:
 - Create a file named `.env` in the root of your project folder
     - Add the following to the `.env` file (replace values with your password & username)
         ```
@@ -50,6 +61,30 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
     - set value of `headless` variable to `False` in program
 
 ### Make Program executable from anywhere
+
+#### new method:
+- Add the following in ~/.bashrc or ~/.zshrc (depending on your shell) to create a function that runs the program using `uv`  (if using fish shell, follow steps mentioned later) :
+```bash
+# # wallauto ("$@" ensure flags passed at the end of the command are passed along to the final program)
+wallauto() {
+uv run /home/fiona/projects/wallhaven-automator/main.py "$@"
+}
+```
+- Source the file to apply changes:
+  - `source ~/.bashrc` or `source ~/.zshrc`
+- Call `wallauto` from terminal.
+
+- If using fish shell, add the following to `~/.config/fish/config.fish` :
+```fish
+# wallauto for fish ("$@" ensure flags passed at the end of the command are passed along to the final program)
+# argv passes flags passed along with command to the script
+function wallauto
+uv run /home/fiona/projects/wallhaven-automator/main.py $argv
+end
+```
+
+
+#### old method:
 
 - Add the shebang line that points to your Python interpreter inside your virtual enviornment, e.g. `#!/home/fiona/projects/wallhaven-automator/venv/bin/python3`   (alternative to adding `#!/usr/bin/python` to the top of the file)
 - Make script executable
