@@ -18,7 +18,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 ### Steps
 
-#### new method:
+#### new method (Don't use this if you need to use KDE shortcuts to launch the program):
 - Clone the repository
   - `git clone....`
   - `cd wallhaven-automator`
@@ -28,7 +28,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 #### old methods:
 - set up a virtual environment (optional but recommended)
-  - `python3 -m venv venv`
+  - `python3 -m venv .venv`
   - Activate it with `source venv/bin/activate`
 - Install project dependencies
   - `pip install -r requirements.txt`
@@ -62,7 +62,7 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 
 ### Make Program executable from anywhere
 
-#### new method:
+#### new method (Don't Use this if you need to use KDE shortcuts to launch the program):
 - Add the following in ~/.bashrc or ~/.zshrc (depending on your shell) to create a function that runs the program using `uv`  (if using fish shell, follow steps mentioned later) :
 ```bash
 # # wallauto ("$@" ensure flags passed at the end of the command are passed along to the final program)
@@ -86,7 +86,7 @@ end
 
 #### old method:
 
-- Add the shebang line that points to your Python interpreter inside your virtual enviornment, e.g. `#!/home/fiona/projects/wallhaven-automator/venv/bin/python3`   (alternative to adding `#!/usr/bin/python` to the top of the file)
+- Add the shebang line that points to your Python interpreter inside your virtual enviornment, e.g. `#!/home/fiona/projects/wallhaven-automator/.venv/bin/python3`   (alternative to adding `#!/usr/bin/python` to the top of the file)
 - Make script executable
   - `chmod +x main.py`
 - Create a symbolic link to your script-name.py from `/usr/local/bin` 

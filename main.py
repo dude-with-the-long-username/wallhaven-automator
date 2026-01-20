@@ -1,4 +1,4 @@
-#!/home/fiona/projects/wallhaven-automator/venv/bin/python3
+#!/home/fiona/projects/wallhaven-automator/.venv/bin/python3
 
 
 #!/usr/bin/python
