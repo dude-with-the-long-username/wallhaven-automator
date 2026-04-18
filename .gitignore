@@ -3,6 +3,7 @@ temp_for_testing*.py
 .env
 state.json
 wallpapers.db
+.history
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
