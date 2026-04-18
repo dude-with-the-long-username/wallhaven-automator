@@ -29,14 +29,17 @@ Automate repetitive wallpaper actions on [wallhaven.cc](https://wallhaven.cc)
 #### old methods:
 - set up a virtual environment (optional but recommended)
   - `python3 -m venv .venv`
-  - Activate it with `source venv/bin/activate`
+  - Activate it with `source .venv/bin/activate`
+    - or use ``source .venv/bin/activate.fish` for fish shell
 - Install project dependencies
   - `pip install -r requirements.txt`
 - Install browsers required by playwright
   - `playwright install` or `python -m playwright install`
+    - if `playwright install` fails, try `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 playwright open google.com`.
+      - if it works, run `export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1` to set the environment variable for the current session, and add `export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1` to your shell config file (e.g. `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/config.fish`) to set it permanently.
 
 #### common to both methods:
-- Create a file named `.env` in the root of your project folder
+- Create a file named `.env` in the root of your project folder (or rename the existing `.env.example` file to `.env`)
     - Add the following to the `.env` file (replace values with your password & username)
         ```
             USERNAME='your-username'
